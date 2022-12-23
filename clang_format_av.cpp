@@ -45,7 +45,7 @@ std::filesystem::path get_clang_format_binary_path(const std::string& version) {
 #else
     exe_path = std::filesystem::canonical("/proc/self/exe");
 #endif
-    return exe_path.parent_path() / ("clang-format-" + version);
+    return exe_path.parent_path() / ("clang-format-av-" + version);
 }
 
 

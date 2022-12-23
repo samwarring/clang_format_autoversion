@@ -4,7 +4,7 @@
 #       - install(PROGRAMS RENAME)
 cmake_minimum_required(VERSION 3.20)
 
-project(clang_format_autoversion)
+project(clang_format_autoversion VERSION 0.1.0)
 include(ExternalProject)
 include(GNUInstallDirs)
 
@@ -12,7 +12,7 @@ include(GNUInstallDirs)
 set(LLVM_REPO_URL "https://github.com/llvm/llvm-project" CACHE STRING "URL or path to LLVM git repository")
 
 # Define how each clang-format version gets built.
-function(add_clang_format_version MAJOR COMMIT)
+macro(add_clang_format_version MAJOR COMMIT)
     ExternalProject_Add(
         clang_${MAJOR}
         GIT_REPOSITORY "${LLVM_REPO_URL}"
@@ -29,8 +29,8 @@ function(add_clang_format_version MAJOR COMMIT)
         LOG_OUTPUT_ON_FAILURE TRUE
     )
     ExternalProject_Get_Property(clang_${MAJOR} BINARY_DIR)
-    install(PROGRAMS "${BINARY_DIR}/bin/clang-format" TYPE BIN RENAME clang-format-${MAJOR})
-endfunction()
+    install(PROGRAMS "${BINARY_DIR}/bin/clang-format" TYPE BIN RENAME clang-format-av-${MAJOR})
+endmacro()
 
 # Define which clang-format versions get built.
 add_clang_format_version(13 75e33f71c2dae584b13a7d1186ae0a038ba98838) # llvmorg-13.0.1
@@ -49,3 +49,17 @@ target_link_libraries(clang_format_av PRIVATE Boost::boost Threads::Threads)
 target_compile_features(clang_format_av PRIVATE cxx_std_17)
 target_compile_definitions(clang_format_av PRIVATE -DDEFAULT_CLANG_FORMAT_VERSION=\"${DEFAULT_CLANG_FORMAT_VERSION}\")
 install(TARGETS clang_format_av)
+
+# Variables common to all CPack generators
+set(CPACK_PACKAGE_NAME clang-format-autoversion)
+set(CPACK_PACKAGE_VENDOR "Sam Warring")
+set(CPACK_PACKAGE_DESCRIPTION "Distribution of multiple clang-format versions with a launcher to auto-select the correct version")
+set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/samwarring/clang_format_autoversion")
+set(CPACK_PACKAGE_CONTACT "Sam Warring <samwarring@gmail.com>")
+
+# Variables specific to CPack Debian generator
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libtinfo6, libstdc++6, libgcc-s1")
+
+include(CPack)
