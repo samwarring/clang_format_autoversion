@@ -19,6 +19,7 @@ macro(add_clang_format_version MAJOR COMMIT)
         GIT_TAG ${COMMIT}
         GIT_SHALLOW TRUE
         GIT_PROGRESS TRUE
+        UPDATE_DISCONNECTED TRUE
         SOURCE_SUBDIR llvm
         CONFIGURE_HANDLED_BY_BUILD TRUE
         CMAKE_GENERATOR Ninja
@@ -28,8 +29,11 @@ macro(add_clang_format_version MAJOR COMMIT)
         LOG_CONFIGURE TRUE
         LOG_OUTPUT_ON_FAILURE TRUE
     )
+    if (WIN32)
+        set(EXE ".exe")
+    endif()
     ExternalProject_Get_Property(clang_${MAJOR} BINARY_DIR)
-    install(PROGRAMS "${BINARY_DIR}/bin/clang-format" TYPE BIN RENAME clang-format-av-${MAJOR})
+    install(PROGRAMS "${BINARY_DIR}/bin/clang-format${EXE}" TYPE BIN RENAME clang-format-av-${MAJOR}${EXE})
 endmacro()
 
 # Define which clang-format versions get built.
