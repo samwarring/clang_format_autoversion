@@ -1,0 +1,14 @@
+name: Build
+on: [push]
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache LLVM downloads
+        uses: actions/cache@v3
+        with:
+          key: llvm-downloads
+          path: .downloads
+      - run: cmake --preset gcc-release
+      - run: cmake --build build/gcc-release
