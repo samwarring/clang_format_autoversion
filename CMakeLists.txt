@@ -8,39 +8,66 @@ project(clang_format_autoversion VERSION 0.1.0)
 include(ExternalProject)
 include(GNUInstallDirs)
 
-# This can be overridden to a local path to dramatically speed up the clone step.
-set(LLVM_REPO_URL "https://github.com/llvm/llvm-project" CACHE STRING "URL or path to LLVM git repository")
-
 if (WIN32)
     set(EXE ".exe")
 endif()
 
 # Define how each clang-format version gets built.
-macro(add_clang_format_version MAJOR COMMIT)
+add_custom_target(clang_0)
+function(add_clang_format_version)
+    set(OPTIONS)
+    set(ONE_VALUE_ARGS MAJOR COMMIT DEPENDS_ON MD5)
+    set(MULTIVALUE_ARGS)
+    cmake_parse_arguments(arg "${OPTIONS}" "${ONE_VALUE_ARGS}" "${MULTIVALUE_ARGS}" ${ARGN})
+
     ExternalProject_Add(
-        clang_${MAJOR}
-        GIT_REPOSITORY "${LLVM_REPO_URL}"
-        GIT_TAG ${COMMIT}
-        GIT_SHALLOW TRUE
-        GIT_PROGRESS TRUE
-        UPDATE_DISCONNECTED TRUE
+        # Target name
+        clang_${arg_MAJOR}
+
+        # Download options
+        DOWNLOAD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.downloads"
+        URL https://github.com/llvm/llvm-project/archive/${arg_COMMIT}.zip
+        DOWNLOAD_NAME "clang-${arg_MAJOR}-${arg_COMMIT}.zip"
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+        URL_MD5 ${arg_MD5}
+
+        # Configure options
         SOURCE_SUBDIR llvm
         CONFIGURE_HANDLED_BY_BUILD TRUE
         CMAKE_GENERATOR Ninja
         CMAKE_CACHE_ARGS -DLLVM_ENABLE_PROJECTS:STRING=clang -DCMAKE_BUILD_TYPE:STRING=MinSizeRel
+
+        # Build options
         BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> --target clang-format
+        
+        # Install options
         INSTALL_COMMAND ""
+
+        # Logging options
         LOG_CONFIGURE TRUE
         LOG_OUTPUT_ON_FAILURE TRUE
     )
-    ExternalProject_Get_Property(clang_${MAJOR} BINARY_DIR)
-    install(PROGRAMS "${BINARY_DIR}/bin/clang-format${EXE}" TYPE BIN RENAME clang-format-av-${MAJOR}${EXE})
-endmacro()
+    add_dependencies(clang_${arg_MAJOR} ${arg_DEPENDS_ON})
+    ExternalProject_Get_Property(clang_${arg_MAJOR} BINARY_DIR)
+    install(PROGRAMS "${BINARY_DIR}/bin/clang-format${EXE}" TYPE BIN RENAME clang-format-av-${arg_MAJOR}${EXE})
+endfunction()
 
 # Define which clang-format versions get built.
-add_clang_format_version(13 75e33f71c2dae584b13a7d1186ae0a038ba98838) # llvmorg-13.0.1
-add_clang_format_version(14 f28c006a5895fc0e329fe15fead81e37457cb1d1) # llvmorg-14.0.6
-add_clang_format_version(15 088f33605d8a61ff519c580a71b1dd57d16a03f8) # llvmorg-15.0.6
+add_clang_format_version( # llvmorg-13.0.1
+    MAJOR 13
+    COMMIT 75e33f71c2dae584b13a7d1186ae0a038ba98838
+    MD5 faea4392a33c11ddf4c170a746f0b22b
+    DEPENDS_ON clang_0)
+add_clang_format_version( # llvmorg-14.0.6
+    MAJOR 14
+    COMMIT f28c006a5895fc0e329fe15fead81e37457cb1d1
+    MD5 583b4463f0522c7d9439b06f0f2bb94f
+    DEPENDS_ON clang_13)
+add_clang_format_version( # llvmorg-15.0.6
+    MAJOR 15
+    COMMIT 088f33605d8a61ff519c580a71b1dd57d16a03f8
+    MD5 6b58de0ea7b3424ee087622b327d3836
+    DEPENDS_ON clang_14) 
 
 # When the launcher cannot find a .clang-format file, it defaults to this version.
 set(DEFAULT_CLANG_FORMAT_VERSION 15)

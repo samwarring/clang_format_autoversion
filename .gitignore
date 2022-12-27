@@ -3,3 +3,4 @@ venv/
 .vscode/
 CMakeUserPresets.json
 vcpkg.json
+.downloads/
