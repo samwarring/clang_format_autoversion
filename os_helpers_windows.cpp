@@ -5,8 +5,7 @@
 
 const std::size_t PATH_BUFFER_SIZE = 1024;
 
-std::filesystem::path get_clang_format_binary_dir()
-{
+std::filesystem::path get_clang_format_binary_dir() {
     // GetFileNameA(NULL, ...) gets path to the current executable.
     char buffer[PATH_BUFFER_SIZE];
     DWORD dwPathSize = GetModuleFileNameA(NULL, buffer, PATH_BUFFER_SIZE);
@@ -15,8 +14,7 @@ std::filesystem::path get_clang_format_binary_dir()
 }
 
 
-int execute_child_process(const std::vector<std::string>& argv)
-{
+int execute_child_process(std::vector<std::string>& argv) {
     // Join the arguments into a single string. Each argument is enclosed in double-quotes
     // and double-quotes occuring in each argument are escaped.
     std::ostringstream sout;
