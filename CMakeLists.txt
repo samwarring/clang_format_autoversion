@@ -51,6 +51,7 @@ function (add_clang_format_version)
         # Install options
         INSTALL_COMMAND ""
         # Logging options
+        LOG_DOWNLOAD TRUE
         LOG_BUILD TRUE
         LOG_CONFIGURE TRUE
         LOG_OUTPUT_ON_FAILURE TRUE)
