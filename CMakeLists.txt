@@ -45,11 +45,8 @@ add_clang_format_version(15 088f33605d8a61ff519c580a71b1dd57d16a03f8) # llvmorg-
 set(DEFAULT_CLANG_FORMAT_VERSION 15)
 
 # Define the "launcher" application
-find_package(Boost REQUIRED)
-find_package(Threads REQUIRED)
 add_executable(clang_format_av clang_format_av.cpp)
 set_target_properties(clang_format_av PROPERTIES OUTPUT_NAME "clang-format-av")
-target_link_libraries(clang_format_av PRIVATE Boost::boost Threads::Threads)
 target_compile_features(clang_format_av PRIVATE cxx_std_17)
 target_compile_definitions(clang_format_av PRIVATE -DDEFAULT_CLANG_FORMAT_VERSION=\"${DEFAULT_CLANG_FORMAT_VERSION}\")
 install(TARGETS clang_format_av)
