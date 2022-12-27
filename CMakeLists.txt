@@ -11,6 +11,10 @@ include(GNUInstallDirs)
 # This can be overridden to a local path to dramatically speed up the clone step.
 set(LLVM_REPO_URL "https://github.com/llvm/llvm-project" CACHE STRING "URL or path to LLVM git repository")
 
+if (WIN32)
+    set(EXE ".exe")
+endif()
+
 # Define how each clang-format version gets built.
 macro(add_clang_format_version MAJOR COMMIT)
     ExternalProject_Add(
@@ -29,9 +33,6 @@ macro(add_clang_format_version MAJOR COMMIT)
         LOG_CONFIGURE TRUE
         LOG_OUTPUT_ON_FAILURE TRUE
     )
-    if (WIN32)
-        set(EXE ".exe")
-    endif()
     ExternalProject_Get_Property(clang_${MAJOR} BINARY_DIR)
     install(PROGRAMS "${BINARY_DIR}/bin/clang-format${EXE}" TYPE BIN RENAME clang-format-av-${MAJOR}${EXE})
 endmacro()
@@ -45,10 +46,18 @@ add_clang_format_version(15 088f33605d8a61ff519c580a71b1dd57d16a03f8) # llvmorg-
 set(DEFAULT_CLANG_FORMAT_VERSION 15)
 
 # Define the "launcher" application
-add_executable(clang_format_av clang_format_av.cpp)
+set(SOURCES clang_format_av.cpp)
+if(WIN32)
+    list(APPEND SOURCES os_helpers_windows.cpp)
+endif()
+add_executable(clang_format_av ${SOURCES})
 set_target_properties(clang_format_av PROPERTIES OUTPUT_NAME "clang-format-av")
+target_include_directories(clang_format_av PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_features(clang_format_av PRIVATE cxx_std_17)
-target_compile_definitions(clang_format_av PRIVATE -DDEFAULT_CLANG_FORMAT_VERSION=\"${DEFAULT_CLANG_FORMAT_VERSION}\")
+target_compile_definitions(clang_format_av PRIVATE
+    -DDEFAULT_CLANG_FORMAT_VERSION=\"${DEFAULT_CLANG_FORMAT_VERSION}\"
+    -DEXE_EXTENSION=\"${EXE}\"
+)
 install(TARGETS clang_format_av)
 
 # Variables common to all CPack generators
