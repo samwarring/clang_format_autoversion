@@ -1,0 +1,29 @@
+name: Build
+on: [push]
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get update
+      - run: sudo apt-get install ninja-build
+      - uses: actions/checkout@v3
+      - name: Cache LLVM downloads
+        uses: actions/cache@v3
+        with:
+          key: llvm-downloads
+          path: .downloads
+      - run: cmake --preset gcc-release
+      - run: cmake --build build/gcc-release
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache LLVM downloads
+        uses: actions/cache@v3
+        with:
+          key: llvm-downloads-windows
+          path: .downloads
+      - name: Setup Visual C++ environment
+        uses: ilammy/msvc-dev-cmd@v1
+      - run: cmake --preset msvc-release
+      - run: cmake --build build/msvc-release

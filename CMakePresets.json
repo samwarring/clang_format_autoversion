@@ -30,6 +30,7 @@
         {
             "name": "gcc-release",
             "inherits": "base",
+            "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++",
