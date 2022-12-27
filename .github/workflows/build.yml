@@ -23,5 +23,7 @@ jobs:
         with:
           key: llvm-downloads-windows
           path: .downloads
+      - name: Setup Visual C++ environment
+        uses: ilammy/msvc-dev-cmd@v1
       - run: cmake --preset msvc-release
       - run: cmake --build build/msvc-release
