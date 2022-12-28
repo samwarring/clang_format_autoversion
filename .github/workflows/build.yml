@@ -1,29 +1,35 @@
 name: Build
 on: [push]
 jobs:
-  build_linux:
-    runs-on: ubuntu-latest
+  build_llvm:
+    name: Build LLVM
+    strategy:
+      fail-fast: true
+      matrix:
+        llvm_version: [13, 14, 15]
+        runner: ['ubuntu-latest', 'windows-latest']
+    env:
+      llvm_version_cmake: ${{ format('llvm_versions/llvm_{0}.cmake', matrix.llvm_version) }}
+    runs-on: ${{ matrix.runner }}
     steps:
-      - run: sudo apt-get update
-      - run: sudo apt-get install ninja-build
-      - uses: actions/checkout@v3
-      - name: Cache LLVM downloads
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache LLVM build output
+        id: cache-llvm
         uses: actions/cache@v3
         with:
-          key: llvm-downloads
-          path: .downloads
-      - run: cmake --preset gcc-release
-      - run: cmake --build build/gcc-release
-  build_windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cache LLVM downloads
-        uses: actions/cache@v3
-        with:
-          key: llvm-downloads-windows
-          path: .downloads
+          key: llvm-${{ runner.os }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
+          path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
+      
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install ninja-build
+        if: ${{ runner.os == 'Linux' }}
+
       - name: Setup Visual C++ environment
         uses: ilammy/msvc-dev-cmd@v1
-      - run: cmake --preset msvc-release
-      - run: cmake --build build/msvc-release
+        if: ${{ runner.os == 'Windows' }}
+
+      - name: Build LLVM ${{ matrix.llvm_version }}
+        run: cmake -DLLVM_MAJOR_VERSION=${{ matrix.llvm_version }} -P build_llvm.cmake
+        if: ${{ steps.cache-llvm.outputs.cache-hit != 'true' }}
