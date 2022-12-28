@@ -35,7 +35,7 @@ jobs:
         if: ${{ !steps.cache-llvm.outputs.cache-hit }}
 
       - name: Upload build output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: clang-format-${{ runner.os }}-${{ matrix.llvm_version }}
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
@@ -44,6 +44,7 @@ jobs:
     name: Build Package
     needs: build_llvm
     strategy:
+      fail-fast: true
       matrix:
         runner: ['ubuntu-latest', 'windows-latest']
     runs-on: ${{ matrix.runner }}
@@ -54,7 +55,9 @@ jobs:
       # Download all artifacts for all systems. Should be OK because Windows
       # explicitly looks for *.exe, and Linux looks for extensionless files.
       - name: Download precompiled clang-format binaries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
+        with:
+          path: .llvm_cache/bin
 
       - name: Install Linux dependencies
         run: sudo apt-get update && sudo apt-get install ninja-build
