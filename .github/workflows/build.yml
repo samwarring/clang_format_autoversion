@@ -33,3 +33,45 @@ jobs:
       - name: Build LLVM ${{ matrix.llvm_version }}
         run: cmake -DLLVM_MAJOR_VERSION=${{ matrix.llvm_version }} -P build_llvm.cmake
         if: ${{ !steps.cache-llvm.outputs.cache-hit }}
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v2
+        with:
+          name: clang-format-${{ runner.os }}-${{ matrix.llvm_version }}
+          path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
+
+  build_package:
+    name: Build Package
+    needs: build_llvm
+    strategy:
+      matrix:
+        runner: ['ubuntu-latest', 'windows-latest']
+    runs_on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Download all artifacts for all systems. Should be OK because Windows
+      # explicitly looks for *.exe, and Linux looks for extensionless files.
+      - name: Download precompiled clang-format binaries
+        uses: actions/download-artifact@v2
+
+      - name: Install Linux dependencies
+        run: sudo apt-get update && sudo apt-get install ninja-build
+        if: ${{ runner.os == 'Linux' }}
+
+      - name: Setup Visual C++ environment
+        uses: ilammy/msvc-dev-cmd@v1
+        if: ${{ runner.os == 'Windows' }}
+
+      - name: Build project (Linux)
+        run: |
+          cmake --preset gcc-release
+          cmake --build build/gcc-release --target install
+        if: ${{ runner.os == 'Linux' }}
+
+      - name: Build project (Windows)
+        run: |
+          cmake --preset msvc-release
+          cmake --build build/msvc-release --target install
+        if: ${{ runner.os == 'Windows' }}
