@@ -32,7 +32,8 @@ cmake_path(ABSOLUTE_PATH PREFIX_DIR NORMALIZE OUTPUT_VARIABLE PREFIX_DIR)
 set(ARCHIVE_FILE "${PREFIX_DIR}/src.zip")
 set(SOURCE_DIR "${PREFIX_DIR}/src")
 set(BINARY_DIR "${PREFIX_DIR}/build")
-set(OUTPUT_FILE "${CMAKE_CURRENT_LIST_DIR}/.llvm_cache/bin/clang-format-${MAJOR}-${COMMIT}${EXE}")
+set(OUTPUT_DIR "${CMAKE_CURRENT_LIST_DIR}/.llvm_cache/bin/")
+set(OUTPUT_FILE "${OUTPUT_DIR}/clang-format-${MAJOR}-${COMMIT}${EXE}")
 
 # If rebuilding, nuke old directories.
 if(REBUILD)
@@ -82,4 +83,5 @@ execute_process(COMMAND "${CMAKE_COMMAND}" --build "${BINARY_DIR}" --target clan
 
 # Copy output binary to the cache
 message("Copying output to ${OUTPUT_FILE}")
+file(MAKE_DIRECTORY "${OUTPUT_DIR}")
 file(COPY_FILE "${BINARY_DIR}/bin/clang-format${EXE}" "${OUTPUT_FILE}")

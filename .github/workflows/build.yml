@@ -6,8 +6,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        llvm_version: [13, 14, 15]
         runner: ['ubuntu-latest', 'windows-latest']
+        llvm_version: [13, 14, 15]
     env:
       llvm_version_cmake: ${{ format('llvm_versions/llvm_{0}.cmake', matrix.llvm_version) }}
     runs-on: ${{ matrix.runner }}
@@ -22,7 +22,7 @@ jobs:
           key: llvm-${{ runner.os }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
       
-      - name: Install dependencies
+      - name: Install Linux dependencies
         run: sudo apt-get update && sudo apt-get install ninja-build
         if: ${{ runner.os == 'Linux' }}
 
@@ -32,4 +32,4 @@ jobs:
 
       - name: Build LLVM ${{ matrix.llvm_version }}
         run: cmake -DLLVM_MAJOR_VERSION=${{ matrix.llvm_version }} -P build_llvm.cmake
-        if: ${{ steps.cache-llvm.outputs.cache-hit != 'true' }}
+        if: ${{ !steps.cache-llvm.outputs.cache-hit }}
