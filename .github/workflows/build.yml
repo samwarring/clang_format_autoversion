@@ -51,12 +51,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      # Download all artifacts for all systems. Should be OK because Windows
-      # explicitly looks for *.exe, and Linux looks for extensionless files.
-      - name: Download precompiled clang-format binaries
+        
+      - name: Download pre-compiled clang-format 13
         uses: actions/download-artifact@v3
         with:
+          name: clang-format-${{ runner.os }}-13
+          path: .llvm_cache/bin
+
+      - name: Download pre-compiled clang-format 14
+        uses: actions/download-artifact@v3
+        with:
+          name: clang-format-${{ runner.os }}-14
+          path: .llvm_cache/bin
+
+      - name: Download pre-compiled clang-format 15
+        uses: actions/download-artifact@v3
+        with:
+          name: clang-format-${{ runner.os }}-15
           path: .llvm_cache/bin
 
       - name: Install Linux dependencies
