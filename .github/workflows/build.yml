@@ -178,8 +178,9 @@ jobs:
           echo -n 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ ' > /etc/apt/sources.list.d/kitware.list
           lsb_release -cs | tr -d '\n' >> /etc/apt/sources.list.d/kitware.list
           echo ' main' >> /etc/apt/sources.list.d/kitware.list
+          add-apt-repository ppa:ubuntu-toolchain-r/test
           apt-get update
-          apt-get install -y ninja-build cmake g++
+          apt-get install -y ninja-build cmake g++ gcc-9 g++-9
         
       - name: Build project
         run: |
