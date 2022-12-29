@@ -89,3 +89,31 @@ jobs:
           cmake --preset msvc-release
           cmake --build build/msvc-release --target package
         if: ${{ runner.os == 'Windows' }}
+
+      - name: Upload package (.tar.gz)
+        if: ${{ runner.os == 'Linux' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: package-${{ runner.os }}-tgz
+          path: build/gcc-release/clang-format-autoversion-*-Linux.tar.gz
+
+      - name: Upload package (.deb)
+        if: ${{ runner.os == 'Linux' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: package-${{ runner.os }}-deb
+          path: build/gcc-release/clang-format-autoversion_*_amd64.deb
+          
+      - name: Upload package (.zip)
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: package-${{ runner.os }}-zip
+          path: build/msvc-release/clang-format-autoversion-*-win64.zip
+
+      - name: Upload package (.msi)
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: package-${{ runner.os }}-msi
+          path: build/msvc-release/clang-format-autoversion-*-win64.msi
