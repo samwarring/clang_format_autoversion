@@ -190,11 +190,11 @@ jobs:
       - name: Upload package (.tar.gz)
         uses: actions/upload-artifact@v3
         with:
-          name: package-${{ matrix.image }}-tgz
+          name: package-${{ env.image_key }}-tgz
           path: build/gcc-release/clang-format-autoversion-*-Linux.tar.gz
 
       - name: Upload package (.deb)
         uses: actions/upload-artifact@v3
         with:
-          name: package-${{ matrix.image }}-deb
+          name: package-${{ env.image_key }}-deb
           path: build/gcc-release/clang-format-autoversion_*_amd64.deb
