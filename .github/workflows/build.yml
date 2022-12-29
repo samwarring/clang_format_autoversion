@@ -55,10 +55,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Transform image into valid key
-        run: |
-          echo -n 'image_key=' > tmp.txt
-          echo '${{ matrix.image }}' | tr ':' '-' >> tmp.txt
-          cat tmp.txt >> $GITHUB_ENV
+        run: echo 'image_key=${{ matrix.image }}' | tr ':' '-' | tee -a $GITHUB_ENV
       
       - name: Cache LLVM build output
         id: cache-llvm
@@ -153,10 +150,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Transform image into valid key
-        run: |
-          echo -n 'image_key=' > tmp.txt
-          echo '${{ matrix.image }}' | tr ':' '-' >> tmp.txt
-          cat tmp.txt >> $GITHUB_ENV
+        run: echo 'image_key=${{ matrix.image }}' | tr ':' '-' | tee -a $GITHUB_ENV
 
       - name: Download pre-compiled clang-format 13
         uses: actions/download-artifact@v3
