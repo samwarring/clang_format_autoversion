@@ -81,11 +81,11 @@ jobs:
       - name: Build project (Linux)
         run: |
           cmake --preset gcc-release
-          cmake --build build/gcc-release --target install
+          cmake --build build/gcc-release --target package
         if: ${{ runner.os == 'Linux' }}
 
       - name: Build project (Windows)
         run: |
           cmake --preset msvc-release
-          cmake --build build/msvc-release --target install
+          cmake --build build/msvc-release --target package
         if: ${{ runner.os == 'Windows' }}
