@@ -62,7 +62,7 @@ jobs:
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install ninja-build
+        run: apt-get update && apt-get install ninja-build
         if: ${{ !steps.cache-llvm.outputs.cache-hit }}
 
       - name: Build LLVM ${{ matrix.llvm_version }}
@@ -157,7 +157,7 @@ jobs:
           path: .llvm_cache/bin
 
       - name: Install Linux dependencies
-        run: sudo apt-get update && sudo apt-get install ninja-build
+        run: apt-get update && apt-get install ninja-build
         
       - name: Build project
         run: |
