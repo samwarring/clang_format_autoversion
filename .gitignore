@@ -4,3 +4,4 @@ venv/
 CMakeUserPresets.json
 vcpkg.json
 .downloads/
+.llvm_cache/

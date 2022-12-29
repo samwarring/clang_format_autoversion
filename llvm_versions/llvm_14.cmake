@@ -1,0 +1,4 @@
+set(MAJOR 14)
+set(TAG llvmorg-14.0.6)
+set(COMMIT f28c006a5895fc0e329fe15fead81e37457cb1d1)
+set(MD5 583b4463f0522c7d9439b06f0f2bb94f)
