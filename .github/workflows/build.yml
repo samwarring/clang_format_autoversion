@@ -173,6 +173,12 @@ jobs:
       - name: Install Linux dependencies
         run: |
           apt-get update
+          apt-get install -y gpg wget lsb-release
+          wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+          echo -n 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ ' > /etc/apt/sources.list.d/kitware.list
+          lsb_release -cs | tr -d '\n' >> /etc/apt/sources.list.d/kitware.list
+          echo ' main' >> /etc/apt/sources.list.d/kitware.list
+          apt-get update
           apt-get install -y ninja-build cmake g++
         
       - name: Build project
