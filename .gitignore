@@ -5,3 +5,4 @@ CMakeUserPresets.json
 vcpkg.json
 .downloads/
 .llvm_cache/
+msi_install.log
