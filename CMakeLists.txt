@@ -66,10 +66,18 @@ set(CPACK_PACKAGE_DESCRIPTION
 )
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/samwarring/clang_format_autoversion")
 set(CPACK_PACKAGE_CONTACT "Sam Warring <samwarring@gmail.com>")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "Clang Format AutoVersion") # (Only used by WIX)
 
-# Variables specific to CPack Debian generator
+# Variables specific to CPack DEB generator
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libtinfo6, libstdc++6, libgcc-s1")
+
+# Variables specific to CPack WIX generator
+set(CPACK_WIX_UPGRADE_GUID EE4C9757-9349-4B61-865E-6A3BED156681)
+set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_SOURCE_DIR}/patch.xml")
+set(CPACK_WIX_EXTRA_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/extra.wxs")
+set(CPACK_WIX_EXTENSIONS WixUIExtension)
+set(CPACK_WIX_UI_REF WixUI_FeatureTree)
 
 include(CPack)
