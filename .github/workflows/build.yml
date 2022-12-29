@@ -181,3 +181,19 @@ jobs:
         with:
           name: package-${{ env.image_key }}-deb
           path: build/gcc-release/clang-format-autoversion_*_amd64.deb
+
+  test_package_windows:
+    name: Test Package Windows
+    needs: build_package_windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download MSI installer
+        uses: actions/download-artifact@v3
+        with:
+          name: package-Windows-msi
+      
+      - name: Test MSI package
+        run: test/msi_install.bat clang-format-autoversion-*-win64.msi
