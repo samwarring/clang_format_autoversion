@@ -1,34 +1,29 @@
 name: Build
 on: [push]
 jobs:
-  build_llvm:
-    name: Build LLVM
+  build_llvm_windows:
+    name: Build LLVM Windows
     strategy:
       fail-fast: true
       matrix:
-        runner: ['ubuntu-latest', 'windows-latest']
         llvm_version: [13, 14, 15]
     env:
       llvm_version_cmake: ${{ format('llvm_versions/llvm_{0}.cmake', matrix.llvm_version) }}
-    runs-on: ${{ matrix.runner }}
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
+      
       - name: Cache LLVM build output
         id: cache-llvm
         uses: actions/cache@v3
         with:
-          key: llvm-${{ runner.os }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
+          key: llvm-Windows-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
-      
-      - name: Install Linux dependencies
-        run: sudo apt-get update && sudo apt-get install ninja-build
-        if: ${{ runner.os == 'Linux' && !steps.cache-llvm.outputs.cache-hit }}
 
       - name: Setup Visual C++ environment
         uses: ilammy/msvc-dev-cmd@v1
-        if: ${{ runner.os == 'Windows' && !steps.cache-llvm.outputs.cache-hit }}
+        if: ${{ !steps.cache-llvm.outputs.cache-hit }}
 
       - name: Build LLVM ${{ matrix.llvm_version }}
         run: cmake -DLLVM_MAJOR_VERSION=${{ matrix.llvm_version }} -P build_llvm.cmake
@@ -37,17 +32,56 @@ jobs:
       - name: Upload build output
         uses: actions/upload-artifact@v3
         with:
-          name: clang-format-${{ runner.os }}-${{ matrix.llvm_version }}
+          name: clang-format-Windows-${{ matrix.llvm_version }}
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
 
-  build_package:
-    name: Build Package
-    needs: build_llvm
+  build_llvm_linux:
+    name: Build LLVM Linux
     strategy:
       fail-fast: true
       matrix:
-        runner: ['ubuntu-latest', 'windows-latest']
-    runs-on: ${{ matrix.runner }}
+        image: ['ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04']
+        llvm_version: [13, 14, 15]
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/${{ matrix.image }}
+      credentials:
+        username: ${{ secrets.dockerhub_user }}
+        password: ${{ secrets.dockerhub_password }}
+    env:
+      llvm_version_cmake: ${{ format('llvm_versions/llvm_{0}.cmake', matrix.llvm_version) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Transform image into valid key
+        run: echo 'image_key=${{ matrix.image }}' | tr ':' '-' | tee -a $GITHUB_ENV
+      
+      - name: Cache LLVM build output
+        id: cache-llvm
+        uses: actions/cache@v3
+        with:
+          key: llvm-${{ env.image_key }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
+          path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
+
+      - name: Install dependencies
+        if: ${{ !steps.cache-llvm.outputs.cache-hit }}
+        run: ./setup-apt.sh
+
+      - name: Build LLVM ${{ matrix.llvm_version }}
+        run: cmake -DLLVM_MAJOR_VERSION=${{ matrix.llvm_version }} -P build_llvm.cmake
+        if: ${{ !steps.cache-llvm.outputs.cache-hit }}
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v3
+        with:
+          name: clang-format-${{ env.image_key }}-${{ matrix.llvm_version }}
+          path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
+
+  build_package_windows:
+    name: Build Package Windows
+    needs: build_llvm_windows
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -55,65 +89,95 @@ jobs:
       - name: Download pre-compiled clang-format 13
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ runner.os }}-13
+          name: clang-format-Windows-13
           path: .llvm_cache/bin
 
       - name: Download pre-compiled clang-format 14
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ runner.os }}-14
+          name: clang-format-Windows-14
           path: .llvm_cache/bin
 
       - name: Download pre-compiled clang-format 15
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ runner.os }}-15
+          name: clang-format-Windows-15
           path: .llvm_cache/bin
-
-      - name: Install Linux dependencies
-        run: sudo apt-get update && sudo apt-get install ninja-build
-        if: ${{ runner.os == 'Linux' }}
 
       - name: Setup Visual C++ environment
         uses: ilammy/msvc-dev-cmd@v1
-        if: ${{ runner.os == 'Windows' }}
-
-      - name: Build project (Linux)
-        run: |
-          cmake --preset gcc-release
-          cmake --build build/gcc-release --target package
-        if: ${{ runner.os == 'Linux' }}
 
       - name: Build project (Windows)
         run: |
           cmake --preset msvc-release
           cmake --build build/msvc-release --target package
-        if: ${{ runner.os == 'Windows' }}
 
-      - name: Upload package (.tar.gz)
-        if: ${{ runner.os == 'Linux' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: package-${{ runner.os }}-tgz
-          path: build/gcc-release/clang-format-autoversion-*-Linux.tar.gz
-
-      - name: Upload package (.deb)
-        if: ${{ runner.os == 'Linux' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: package-${{ runner.os }}-deb
-          path: build/gcc-release/clang-format-autoversion_*_amd64.deb
-          
       - name: Upload package (.zip)
-        if: ${{ runner.os == 'Windows' }}
         uses: actions/upload-artifact@v3
         with:
-          name: package-${{ runner.os }}-zip
+          name: package-Windows-zip
           path: build/msvc-release/clang-format-autoversion-*-win64.zip
 
       - name: Upload package (.msi)
-        if: ${{ runner.os == 'Windows' }}
         uses: actions/upload-artifact@v3
         with:
-          name: package-${{ runner.os }}-msi
+          name: package-Windows-msi
           path: build/msvc-release/clang-format-autoversion-*-win64.msi
+
+  build_package_linux:
+    name: Build Package Linux
+    needs: build_llvm_linux
+    strategy:
+      fail-fast: true
+      matrix:
+        image: ['ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04']
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/${{ matrix.image }}
+      credentials:
+        username: ${{ secrets.dockerhub_user }}
+        password: ${{ secrets.dockerhub_password }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Transform image into valid key
+        run: echo 'image_key=${{ matrix.image }}' | tr ':' '-' | tee -a $GITHUB_ENV
+
+      - name: Download pre-compiled clang-format 13
+        uses: actions/download-artifact@v3
+        with:
+          name: clang-format-${{ env.image_key }}-13
+          path: .llvm_cache/bin
+
+      - name: Download pre-compiled clang-format 14
+        uses: actions/download-artifact@v3
+        with:
+          name: clang-format-${{ env.image_key }}-14
+          path: .llvm_cache/bin
+
+      - name: Download pre-compiled clang-format 15
+        uses: actions/download-artifact@v3
+        with:
+          name: clang-format-${{ env.image_key }}-15
+          path: .llvm_cache/bin
+
+      - name: Install Linux dependencies
+        run: ./setup-apt.sh
+        
+      - name: Build project
+        run: |
+          cmake --preset gcc-release
+          cmake --build build/gcc-release --target package
+
+      - name: Upload package (.tar.gz)
+        uses: actions/upload-artifact@v3
+        with:
+          name: package-${{ env.image_key }}-tgz
+          path: build/gcc-release/clang-format-autoversion-*-Linux.tar.gz
+
+      - name: Upload package (.deb)
+        uses: actions/upload-artifact@v3
+        with:
+          name: package-${{ env.image_key }}-deb
+          path: build/gcc-release/clang-format-autoversion_*_amd64.deb

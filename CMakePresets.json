@@ -33,8 +33,8 @@
             "inherits": "base",
             "generator": "Ninja",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_C_COMPILER": "gcc-9",
+                "CMAKE_CXX_COMPILER": "g++-9",
                 "CMAKE_BUILD_TYPE": "Release",
                 "CPACK_GENERATOR": "DEB;TGZ"
             }
