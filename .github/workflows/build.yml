@@ -62,8 +62,10 @@ jobs:
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
 
       - name: Install dependencies
-        run: apt-get update && apt-get install ninja-build cmake g++
         if: ${{ !steps.cache-llvm.outputs.cache-hit }}
+        run: |
+          apt-get update
+          apt-get install -y ninja-build cmake g++
 
       - name: Build LLVM ${{ matrix.llvm_version }}
         run: cmake -DLLVM_MAJOR_VERSION=${{ matrix.llvm_version }} -P build_llvm.cmake
@@ -157,7 +159,9 @@ jobs:
           path: .llvm_cache/bin
 
       - name: Install Linux dependencies
-        run: apt-get update && apt-get install ninja-build cmake g++
+        run: |
+          apt-get update
+          apt-get install -y ninja-build cmake g++
         
       - name: Build project
         run: |
