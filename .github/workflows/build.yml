@@ -61,7 +61,7 @@ jobs:
         id: cache-llvm
         uses: actions/cache@v3
         with:
-          key: llvm-${{ matrix.image_key }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
+          key: llvm-${{ env.image_key }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
 
       - name: Install dependencies
@@ -83,7 +83,7 @@ jobs:
       - name: Upload build output
         uses: actions/upload-artifact@v3
         with:
-          name: clang-format-${{ matrix.image_key }}-${{ matrix.llvm_version }}
+          name: clang-format-${{ env.image_key }}-${{ matrix.llvm_version }}
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
 
   build_package_windows:
@@ -155,19 +155,19 @@ jobs:
       - name: Download pre-compiled clang-format 13
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ matrix.image_key }}-13
+          name: clang-format-${{ env.image_key }}-13
           path: .llvm_cache/bin
 
       - name: Download pre-compiled clang-format 14
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ matrix.image_key }}-14
+          name: clang-format-${{ env.image_key }}-14
           path: .llvm_cache/bin
 
       - name: Download pre-compiled clang-format 15
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ matrix.image_key }}-15
+          name: clang-format-${{ env.image_key }}-15
           path: .llvm_cache/bin
 
       - name: Install Linux dependencies
