@@ -1,3 +1,14 @@
+include(GNUInstallDirs)
+
+# Install the license file
+configure_file("${PROJECT_SOURCE_DIR}/LICENSE" LICENSE.txt)
+if(WIN32)
+    set(INSTALL_LICENSE_DIR ".")
+else()
+    set(INSTALL_LICENSE_DIR "${CMAKE_INSTALL_DATAROOTDIR}/clang-format-autoversion")
+endif()
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/LICENSE.txt" DESTINATION "${INSTALL_LICENSE_DIR}")
+
 # Variables common to all CPack generators
 set(CPACK_PACKAGE_NAME clang-format-autoversion)
 set(CPACK_PACKAGE_VENDOR "Sam Warring")
@@ -7,6 +18,7 @@ set(CPACK_PACKAGE_DESCRIPTION
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/samwarring/clang_format_autoversion")
 set(CPACK_PACKAGE_CONTACT "Sam Warring <samwarring@gmail.com>")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Clang Format AutoVersion") # (Only used by WIX)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/LICENSE.txt")
 
 # Variables specific to CPack DEB generator
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
