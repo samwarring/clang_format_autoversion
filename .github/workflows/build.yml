@@ -191,10 +191,44 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download MSI installer
+        id: download
         uses: actions/download-artifact@v3
         with:
           name: package-Windows-msi
       
       - name: Test MSI package
         shell: cmd
-        run: test\test_msi.bat clang-format-autoversion-*-win64.msi
+        run: test\test_msi.bat "${{ steps.download.outputs.download-path }}"
+
+  test_package_linux:
+    name: Test Package Linux
+    needs: build_package_linux
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04']
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/${{ matrix.image }}
+      credentials:
+        username: ${{ secrets.dockerhub_user }}
+        password: ${{ secrets.dockerhub_password }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Transform image into valid key
+        run: echo 'image_key=${{ matrix.image }}' | tr ':' '-' | tee -a $GITHUB_ENV
+        
+      - name: Download DEB package
+        id: download
+        uses: actions/download-artifact@v3
+        with:
+          name: package-${{ env.image_key }}-deb
+
+      - name: Update APT cache
+        run: apt-get update
+
+      - name: Test DEB package
+        run: test/test_deb.sh ${{ steps.download.outputs.download-path }}
