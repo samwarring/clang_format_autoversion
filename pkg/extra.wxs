@@ -1,0 +1,9 @@
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <Feature Id="AddToPathFeature" Display="expand" Absent="allow" Title="Add to PATH" Level="1">
+            <Component Id="AddToPathComponent" Guid="FAA249D1-289C-43C0-B3BE-1CDE9192B384" KeyPath="yes" Directory="INSTALL_ROOT">
+                <Environment Id="AddToPath" Name="PATH" Action="set" Part="last" System="yes" Permanent="no" Value="[INSTALL_ROOT]bin" />
+            </Component>
+        </Feature>
+    </Fragment>
+</Wix>

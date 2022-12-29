@@ -1,15 +1,9 @@
 # ~~~
-# 3.7   - ExternalProject_Add(SOURCE_SUBDIR)
-# 3.14  - ExternalProject_Add(LOG_OUTPUT_ON_FAILURE)
-# 3.20  - ExternalProject_Add(CONFIGURE_HANDLED_BY_BUILD)
-#       - install(PROGRAMS RENAME)
-# 3.24  - ExternalProject_Add(DOWNLOAD_EXTRACT_TIMESTAMP)
+# 3.20  - install(PROGRAMS RENAME)
 # ~~~
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.20)
 
 project(clang_format_autoversion VERSION 0.1.0)
-include(ExternalProject)
-include(GNUInstallDirs)
 
 set(DEFAULT_CLANG_FORMAT_VERSION
     15
@@ -58,18 +52,4 @@ foreach(LLVM_MAJOR_VERSION IN LISTS LLVM_MAJOR_VERSIONS)
         RENAME "clang-format-av-${LLVM_MAJOR_VERSION}${EXE}")
 endforeach()
 
-# Variables common to all CPack generators
-set(CPACK_PACKAGE_NAME clang-format-autoversion)
-set(CPACK_PACKAGE_VENDOR "Sam Warring")
-set(CPACK_PACKAGE_DESCRIPTION
-    "Distribution of multiple clang-format versions with a launcher to auto-select the correct version"
-)
-set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/samwarring/clang_format_autoversion")
-set(CPACK_PACKAGE_CONTACT "Sam Warring <samwarring@gmail.com>")
-
-# Variables specific to CPack Debian generator
-set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
-set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libtinfo6, libstdc++6, libgcc-s1")
-
-include(CPack)
+add_subdirectory(pkg)
