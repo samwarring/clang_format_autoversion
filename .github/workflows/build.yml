@@ -196,4 +196,5 @@ jobs:
           name: package-Windows-msi
       
       - name: Test MSI package
-        run: test\msi_install.bat clang-format-autoversion-*-win64.msi
+        shell: cmd
+        run: test\test_msi.bat clang-format-autoversion-*-win64.msi
