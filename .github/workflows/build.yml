@@ -53,12 +53,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Transform image into valid key
+        run: |
+          echo -n 'image_key=' > tmp.txt
+          echo '${{ matrix.image }}' | tr ':' '-' >> tmp.txt
+          cat tmp.txt >> $GITHUB_ENV
       
       - name: Cache LLVM build output
         id: cache-llvm
         uses: actions/cache@v3
         with:
-          key: llvm-${{ matrix.image }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
+          key: llvm-${{ matrix.image_key }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
 
       - name: Install dependencies
@@ -80,7 +86,7 @@ jobs:
       - name: Upload build output
         uses: actions/upload-artifact@v3
         with:
-          name: clang-format-${{ matrix.image }}-${{ matrix.llvm_version }}
+          name: clang-format-${{ matrix.image_key }}-${{ matrix.llvm_version }}
           path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
 
   build_package_windows:
@@ -146,22 +152,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Transform image into valid key
+        run: |
+          echo -n 'image_key=' > tmp.txt
+          echo '${{ matrix.image }}' | tr ':' '-' >> tmp.txt
+          cat tmp.txt >> $GITHUB_ENV
+
       - name: Download pre-compiled clang-format 13
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ matrix.image }}-13
+          name: clang-format-${{ matrix.image_key }}-13
           path: .llvm_cache/bin
 
       - name: Download pre-compiled clang-format 14
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ matrix.image }}-14
+          name: clang-format-${{ matrix.image_key }}-14
           path: .llvm_cache/bin
 
       - name: Download pre-compiled clang-format 15
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ matrix.image }}-15
+          name: clang-format-${{ matrix.image_key }}-15
           path: .llvm_cache/bin
 
       - name: Install Linux dependencies
