@@ -203,7 +203,6 @@ jobs:
   test_package_linux:
     name: Test Package Linux
     needs: build_package_linux
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
