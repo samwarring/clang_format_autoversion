@@ -5,4 +5,13 @@ wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | 
 echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/kitware.list
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
 apt-get update
-apt-get install -y ninja-build cmake g++ gcc-9 g++-9
+apt-get install -y             \
+    ninja-build                \
+    cmake                      \
+    g++                        \
+    gcc-9                      \
+    g++-9                      \
+    gcc-aarch64-linux-gnu      \
+    g++-aarch64-linux-gnu      \
+    binutils-aarch64-linux-gnu \
+    libgcc-s1-arm64-cross
