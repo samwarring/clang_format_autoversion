@@ -132,7 +132,7 @@ jobs:
       fail-fast: true
       matrix:
         image: ['ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04']
-        arch: ['x64'] # TODO: Add arm64
+        arch: ['x64', 'arm64']
     runs-on: ubuntu-latest
     container:
       image: docker.io/${{ matrix.image }}
@@ -169,17 +169,17 @@ jobs:
         
       - name: Build project
         run: |
-          cmake --preset gcc-release
-          cmake --build build/gcc-release --target package
+          cmake --preset gcc-release-${{ matrix.arch }}
+          cmake --build build/gcc-release-${{ matrix.arch }} --target package
 
       - name: Upload package (.tar.gz)
         uses: actions/upload-artifact@v3
         with:
-          name: package-${{ env.image_key }}-tgz
-          path: build/gcc-release/clang-format-autoversion-*-Linux.tar.gz
+          name: package-${{ env.image_key }}-${{ matrix.arch }}-tgz
+          path: build/gcc-release-${{ matrix.arch }}/clang-format-autoversion-*-Linux.tar.gz
 
       - name: Upload package (.deb)
         uses: actions/upload-artifact@v3
         with:
-          name: package-${{ env.image_key }}-deb
-          path: build/gcc-release/clang-format-autoversion_*_amd64.deb
+          name: package-${{ env.image_key }}-${{ matrix.arch }}-deb
+          path: build/gcc-release-${{ matrix.arch }}/clang-format-autoversion_*_amd64.deb

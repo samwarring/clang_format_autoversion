@@ -29,7 +29,7 @@
             }
         },
         {
-            "name": "gcc-release",
+            "name": "gcc-release-x64",
             "inherits": "base",
             "generator": "Ninja",
             "cacheVariables": {
@@ -37,6 +37,18 @@
                 "CMAKE_CXX_COMPILER": "g++-9",
                 "CMAKE_BUILD_TYPE": "Release",
                 "CPACK_GENERATOR": "DEB;TGZ"
+            }
+        },
+        {
+            "name": "gcc-release-arm64",
+            "inherits": "base",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "aarch64-linux-gnu-gcc",
+                "CMAKE_CXX_COMPILER": "aarch64-linux-gnu-g++",
+                "CMAKE_BUILD_TYPE": "Release",
+                "CPACK_GENERATOR": "DEB;TGZ",
+                "TARGET_ARCH": "arm64"
             }
         }
     ]
