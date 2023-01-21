@@ -8,10 +8,8 @@ apt-get update
 apt-get install -y             \
     ninja-build                \
     cmake                      \
-    g++                        \
     gcc-9                      \
     g++-9                      \
-    gcc-aarch64-linux-gnu      \
-    g++-aarch64-linux-gnu      \
-    binutils-aarch64-linux-gnu \
-    gcc-9-aarch64-linux-gnu
+    gcc-8-aarch64-linux-gnu    \
+    g++-8-aarch64-linux-gnu    \
+    binutils-aarch64-linux-gnu

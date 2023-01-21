@@ -33,6 +33,18 @@ target_compile_features(clang_format_av PRIVATE cxx_std_17)
 target_compile_definitions(
     clang_format_av PRIVATE -DDEFAULT_CLANG_FORMAT_VERSION=\"${DEFAULT_CLANG_FORMAT_VERSION}\"
                             -DEXE_EXTENSION=\"${EXE}\")
+if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8)
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+            # gcc-8 does not link to std::filesystem unless linking to libstdc++fs
+            target_link_libraries(clang_format_av PRIVATE stdc++fs)
+        endif()
+    endif()
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8)
+        message(FATAL_ERROR "GCC ${CMAKE_CXX_COMPILER_VERSION} is not supported because "
+                            "it does not supply std::filesystem. Please use gcc-8 or newer")
+    endif()
+endif()
 install(TARGETS clang_format_av)
 
 # Locate the desired clang-format binaries and mark them for installation.
