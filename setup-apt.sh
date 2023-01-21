@@ -13,5 +13,4 @@ apt-get install -y             \
     g++-9                      \
     gcc-aarch64-linux-gnu      \
     g++-aarch64-linux-gnu      \
-    binutils-aarch64-linux-gnu \
-    libgcc-s1-arm64-cross
+    binutils-aarch64-linux-gnu
