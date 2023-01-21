@@ -169,17 +169,17 @@ jobs:
         
       - name: Build project
         run: |
-          cmake --preset gcc-release-${{ matrix.arch }}
-          cmake --build build/gcc-release-${{ matrix.arch }} --target package
+          cmake --preset ${{ env.image_key }}-${{ matrix.arch }}
+          cmake --build build/${{ env.image_key }}-${{ matrix.arch }} --target package
 
       - name: Upload package (.tar.gz)
         uses: actions/upload-artifact@v3
         with:
           name: package-${{ env.image_key }}-${{ matrix.arch }}-tgz
-          path: build/gcc-release-${{ matrix.arch }}/clang-format-autoversion-*-Linux.tar.gz
+          path: build/${{ env.image_key }}-${{ matrix.arch }}/clang-format-autoversion-*-Linux.tar.gz
 
       - name: Upload package (.deb)
         uses: actions/upload-artifact@v3
         with:
           name: package-${{ env.image_key }}-${{ matrix.arch }}-deb
-          path: build/gcc-release-${{ matrix.arch }}/clang-format-autoversion_*_amd64.deb
+          path: build/${{ env.image_key }}-${{ matrix.arch }}/clang-format-autoversion_*_amd64.deb
