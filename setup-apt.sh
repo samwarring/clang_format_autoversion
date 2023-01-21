@@ -10,6 +10,8 @@ apt-get install -y                 \
     cmake                          \
     gcc                            \
     g++                            \
+    gcc-aarch64-linux-gnu          \
+    g++-aarch64-linux-gnu          \
     binutils-aarch64-linux-gnu
 
 UBUNTU_VERSION=$(lsb_release -rs)
@@ -20,9 +22,4 @@ if [ "$UBUNTU_VERSION" = "18.04" ]; then
         g++-9                      \
         gcc-8-aarch64-linux-gnu    \
         g++-8-aarch64-linux-gnu
-else
-    # Newer Ubuntu versions can stick with default gcc version.
-    apt-get install -y             \
-        gcc-aarch64-linux-gnu      \
-        g++-aarch64-linux-gnu
 fi
