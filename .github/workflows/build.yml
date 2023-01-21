@@ -182,4 +182,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: package-${{ env.image_key }}-${{ matrix.arch }}-deb
-          path: build/${{ env.image_key }}-${{ matrix.arch }}/clang-format-autoversion_*_amd64.deb
+          path: build/${{ env.image_key }}-${{ matrix.arch }}/clang-format-autoversion_*.deb
