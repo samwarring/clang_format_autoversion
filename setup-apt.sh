@@ -13,4 +13,5 @@ apt-get install -y             \
     g++-9                      \
     gcc-aarch64-linux-gnu      \
     g++-aarch64-linux-gnu      \
-    binutils-aarch64-linux-gnu
+    binutils-aarch64-linux-gnu \
+    gcc-9-aarch64-linux-gnu
