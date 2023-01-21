@@ -11,6 +11,9 @@ set(DEFAULT_CLANG_FORMAT_VERSION
 set(LLVM_MAJOR_VERSIONS
     13;14;15
     CACHE STRING "List of clang-format major versions to package into the installer")
+set(TARGET_ARCH
+    "x64"
+    CACHE STRING "Target architecture (x64 or arm64)")
 
 if(WIN32)
     set(EXE ".exe")
@@ -39,7 +42,7 @@ foreach(LLVM_MAJOR_VERSION IN LISTS LLVM_MAJOR_VERSIONS)
     if(NOT FOUND_VERSION)
         message(FATAL_ERROR "Failed to load llvm_${LLVM_MAJOR_VERSION}.cmake")
     endif()
-    set(CLANG_FORMAT_BINARY_NAME "clang-format-${LLVM_MAJOR_VERSION}-${COMMIT}${EXE}")
+    set(CLANG_FORMAT_BINARY_NAME "clang-format-${LLVM_MAJOR_VERSION}-${TARGET_ARCH}-${COMMIT}${EXE}")
     set(CLANG_FORMAT_BINARY_PATH
         "${CMAKE_CURRENT_SOURCE_DIR}/.llvm_cache/bin/${CLANG_FORMAT_BINARY_NAME}")
     if(NOT EXISTS "${CLANG_FORMAT_BINARY_PATH}")
