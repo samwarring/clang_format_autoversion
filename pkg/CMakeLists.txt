@@ -19,8 +19,9 @@ set(CMAKE_PROJECT_HOMEPAGE_URL "https://github.com/samwarring/clang_format_autov
 set(CPACK_PACKAGE_CONTACT "Sam Warring <samwarring@gmail.com>")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Clang Format AutoVersion") # (Only used by WIX)
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/LICENSE.txt")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libstdc++6")
+
 # Variables specific to CPack DEB generator
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libstdc++6")
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
 if(TARGET_ARCH STREQUAL x64)
