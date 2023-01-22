@@ -14,13 +14,17 @@ set(LLVM_MAJOR_VERSIONS
 set(TARGET_ARCH
     "x64"
     CACHE STRING "Target architecture (x64 or arm64)")
+set(ENABLE_TEST
+    ON
+    CACHE STRING "Build the unit-tests")
 
 if(WIN32)
     set(EXE ".exe")
 endif()
 
 # Define the "launcher" application
-set(SOURCES src/clang_format_av.cpp)
+set(SOURCES src/clang_format_av.cpp
+            src/detect_version.cpp)
 if(WIN32)
     list(APPEND SOURCES src/os_helpers_windows.cpp)
 else()
@@ -31,7 +35,7 @@ set_target_properties(clang_format_av PROPERTIES OUTPUT_NAME "clang-format-av")
 target_include_directories(clang_format_av PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_features(clang_format_av PRIVATE cxx_std_17)
 target_compile_definitions(
-    clang_format_av PRIVATE -DDEFAULT_CLANG_FORMAT_VERSION=\"${DEFAULT_CLANG_FORMAT_VERSION}\"
+    clang_format_av PRIVATE -DDEFAULT_CLANG_FORMAT_VERSION=${DEFAULT_CLANG_FORMAT_VERSION}
                             -DEXE_EXTENSION=\"${EXE}\")
 if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8)
@@ -67,5 +71,11 @@ foreach(LLVM_MAJOR_VERSION IN LISTS LLVM_MAJOR_VERSIONS)
         TYPE BIN
         RENAME "clang-format-av-${LLVM_MAJOR_VERSION}${EXE}")
 endforeach()
+
+# Enable the unit-tests
+if (ENABLE_TEST)
+    enable_testing()
+    add_subdirectory(test)
+endif()
 
 add_subdirectory(pkg)
