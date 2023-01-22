@@ -40,8 +40,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        image: ['ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04']
         llvm_version: [13, 14, 15]
+        image: ['ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04']
+        arch: ['x64', 'arm64']
     runs-on: ubuntu-latest
     container:
       image: docker.io/${{ matrix.image }}
@@ -61,22 +62,22 @@ jobs:
         id: cache-llvm
         uses: actions/cache@v3
         with:
-          key: llvm-${{ env.image_key }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
-          path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
+          key: llvm-${{ env.image_key }}-${{ matrix.arch }}-${{ matrix.llvm_version }}-${{ hashFiles(env.llvm_version_cmake) }}
+          path: .llvm_cache/bin/clang-format-*
 
       - name: Install dependencies
         if: ${{ !steps.cache-llvm.outputs.cache-hit }}
         run: ./setup-apt.sh
 
       - name: Build LLVM ${{ matrix.llvm_version }}
-        run: cmake -DLLVM_MAJOR_VERSION=${{ matrix.llvm_version }} -P build_llvm.cmake
+        run: cmake -DLLVM_MAJOR_VERSION=${{ matrix.llvm_version }} -DTARGET_ARCH=${{ matrix.arch }} -P build_llvm.cmake
         if: ${{ !steps.cache-llvm.outputs.cache-hit }}
 
       - name: Upload build output
         uses: actions/upload-artifact@v3
         with:
-          name: clang-format-${{ env.image_key }}-${{ matrix.llvm_version }}
-          path: .llvm_cache/bin/clang-format-${{ matrix.llvm_version }}*
+          name: clang-format-${{ env.image_key }}-${{ matrix.arch }}-${{ matrix.llvm_version }}
+          path: .llvm_cache/bin/clang-format-*
 
   build_package_windows:
     name: Build Package Windows
@@ -131,6 +132,7 @@ jobs:
       fail-fast: true
       matrix:
         image: ['ubuntu:18.04', 'ubuntu:20.04', 'ubuntu:22.04']
+        arch: ['x64', 'arm64']
     runs-on: ubuntu-latest
     container:
       image: docker.io/${{ matrix.image }}
@@ -147,19 +149,19 @@ jobs:
       - name: Download pre-compiled clang-format 13
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ env.image_key }}-13
+          name: clang-format-${{ env.image_key }}-${{ matrix.arch }}-13
           path: .llvm_cache/bin
 
       - name: Download pre-compiled clang-format 14
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ env.image_key }}-14
+          name: clang-format-${{ env.image_key }}-${{ matrix.arch }}-14
           path: .llvm_cache/bin
 
       - name: Download pre-compiled clang-format 15
         uses: actions/download-artifact@v3
         with:
-          name: clang-format-${{ env.image_key }}-15
+          name: clang-format-${{ env.image_key }}-${{ matrix.arch }}-15
           path: .llvm_cache/bin
 
       - name: Install Linux dependencies
@@ -167,20 +169,20 @@ jobs:
         
       - name: Build project
         run: |
-          cmake --preset gcc-release
-          cmake --build build/gcc-release --target package
+          cmake --preset ${{ env.image_key }}-${{ matrix.arch }}
+          cmake --build build/${{ env.image_key }}-${{ matrix.arch }} --target package
 
       - name: Upload package (.tar.gz)
         uses: actions/upload-artifact@v3
         with:
-          name: package-${{ env.image_key }}-tgz
-          path: build/gcc-release/clang-format-autoversion-*-Linux.tar.gz
+          name: package-${{ env.image_key }}-${{ matrix.arch }}-tgz
+          path: build/${{ env.image_key }}-${{ matrix.arch }}/clang-format-autoversion-*-Linux.tar.gz
 
       - name: Upload package (.deb)
         uses: actions/upload-artifact@v3
         with:
-          name: package-${{ env.image_key }}-deb
-          path: build/gcc-release/clang-format-autoversion_*_amd64.deb
+          name: package-${{ env.image_key }}-${{ matrix.arch }}-deb
+          path: build/${{ env.image_key }}-${{ matrix.arch }}/clang-format-autoversion_*.deb
 
   # This job does nothing and is only used for the branch protection
   # See https://github.com/orgs/community/discussions/26733?sort=top#discussioncomment-3253155
