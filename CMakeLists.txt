@@ -40,7 +40,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
             target_link_libraries(clang_format_av PRIVATE stdc++fs)
         endif()
     endif()
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8)
         message(FATAL_ERROR "GCC ${CMAKE_CXX_COMPILER_VERSION} is not supported because "
                             "it does not supply std::filesystem. Please use gcc-8 or newer")
     endif()
@@ -54,7 +54,8 @@ foreach(LLVM_MAJOR_VERSION IN LISTS LLVM_MAJOR_VERSIONS)
     if(NOT FOUND_VERSION)
         message(FATAL_ERROR "Failed to load llvm_${LLVM_MAJOR_VERSION}.cmake")
     endif()
-    set(CLANG_FORMAT_BINARY_NAME "clang-format-${LLVM_MAJOR_VERSION}-${TARGET_ARCH}-${COMMIT}${EXE}")
+    set(CLANG_FORMAT_BINARY_NAME
+        "clang-format-${LLVM_MAJOR_VERSION}-${TARGET_ARCH}-${COMMIT}${EXE}")
     set(CLANG_FORMAT_BINARY_PATH
         "${CMAKE_CURRENT_SOURCE_DIR}/.llvm_cache/bin/${CLANG_FORMAT_BINARY_NAME}")
     if(NOT EXISTS "${CLANG_FORMAT_BINARY_PATH}")
