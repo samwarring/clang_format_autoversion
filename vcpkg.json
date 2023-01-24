@@ -1,0 +1,7 @@
+{
+    "name": "clang-format-autoversion",
+    "dependencies": [
+        "catch2",
+        "ctre"
+    ]
+}

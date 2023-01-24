@@ -1,0 +1,2 @@
+add_subdirectory(libclang_format_av)
+add_subdirectory(libclang_format_av_test)
