@@ -24,18 +24,18 @@ public:
   void read_configuration(std::string contents);
 
   /**
-   * @brief Reads a single line from the .clang-format configuraiton file.
-   * @param line Line from configuration file.
-   */
-  void read_configuration_line(std::string_view line);
-
-  /**
    * @brief Gets the detected version after reading the configuration file.
    * @return clang-format major version number, or -1 if no applicable version.
    */
   int detected_version() const;
 
 private:
+  /**
+   * @brief Reads a single line from the .clang-format configuraiton file.
+   * @param line Line from configuration file.
+   */
+  void read_configuration_line(std::string_view line);
+
   std::vector<int> versions_;
 };
 
