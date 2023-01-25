@@ -8,9 +8,36 @@
             "toolchainFile": "${sourceDir}/ext/vcpkg/scripts/buildsystems/vcpkg.cmake"
         },
         {
-            "name": "ninja",
+            "name": "linux",
             "hidden": true,
-            "generator": "Ninja"
+            "generator": "Ninja",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "windows",
+            "hidden": true,
+            "generator": "Ninja",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl",
+                "CMAKE_CXX_COMPILER": "cl"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
         },
         {
             "name": "debug",
@@ -24,7 +51,16 @@
             "displayName": "Linux Debug",
             "inherits": [
                 "base",
-                "ninja",
+                "linux",
+                "debug"
+            ]
+        },
+        {
+            "name": "windows-debug",
+            "displayName": "Windows Debug",
+            "inherits": [
+                "base",
+                "windows",
                 "debug"
             ]
         }
