@@ -1,4 +1,5 @@
 #include "detect_clang_format_version.hpp"
+#include "dump_configs.hpp"
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("detect clang format version") {
@@ -22,5 +23,10 @@ TEST_CASE("detect clang format version") {
                                     "clang/docs/ClangFormatStyleOptions.html");
     REQUIRE(vers.size() == 1);
     REQUIRE(vers[0] == 14);
+  }
+  SECTION("dump config 13") {
+    auto vers = detect_clang_format_version(std::string(DUMP_CONFIG_13));
+    REQUIRE(vers.size() > 0);
+    REQUIRE(vers[0] == 13);
   }
 }

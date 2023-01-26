@@ -1,5 +1,6 @@
-# clang-format version 13
----
+#include "dump_configs.hpp"
+
+const std::string_view DUMP_CONFIG_13{R"(
 Language:        Cpp
 # BasedOnStyle:  LLVM
 AccessModifierOffset: -2
@@ -175,4 +176,4 @@ WhitespaceSensitiveMacros:
   - BOOST_PP_STRINGIZE
   - NS_SWIFT_NAME
   - CF_SWIFT_NAME
-...
+...)"};
