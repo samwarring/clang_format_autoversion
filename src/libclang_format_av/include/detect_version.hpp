@@ -1,5 +1,5 @@
-#ifndef INCLUDED_DETECT_CLANG_FORMAT_VERSION_HPP
-#define INCLUDED_DETECT_CLANG_FORMAT_VERSION_HPP
+#ifndef INCLUDED_DETECT_VERSION_HPP
+#define INCLUDED_DETECT_VERSION_HPP
 
 #include <string>
 #include <vector>
@@ -18,6 +18,6 @@
  * of parsing this file. The first number in the list is the recommended
  * version.
  */
-std::vector<int> detect_clang_format_version(std::string config_contents);
+std::vector<int> detect_version(std::string config_contents);
 
 #endif
